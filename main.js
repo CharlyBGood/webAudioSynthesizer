@@ -1,26 +1,37 @@
-const WAVEFORM = ["sine", "square", "sawtooth", "triangle"];
+const WAVEFORMS = ["sine", "square", "sawtooth", "triangle"];
 const NOTES = {
   A: 440,
   C: 571.23,
 };
 
+const sliderValue = document.querySelectorAll(".waveform");
+
+let waveFormVal = "sine";
+
+sliderValue.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    console.log(e.target.value);
+    waveFormVal = e.target.value;
+  });
+});
+
 document.querySelector("#play").addEventListener("click", () => {
-  console.log("you pressed play");
+  console.log("you pressed play and selected waveform is " + waveFormVal);
   const actx = new (AudioContext || webkitAudioContext)();
   if (!actx) throw "Not supported!";
   const osc = actx.createOscillator();
-  osc.type = "sawtooth";
+  osc.type = waveFormVal;
   osc.frequency.value = 440; // Hz middle A
-  osc.connect(actx.destination);
+  osc.connect(actx.destination); // soundcard output
   osc.start();
   osc.stop(actx.currentTime + 2);
 });
 
 // -----------------------------------------
 
-// const sliderEl = document.querySelector('input[type="range"]')
+// const sliderNote = document.querySelector('input[type="range"]')
 
-// sliderEl.addEventListener('input', (e) => {
+// sliderNote.addEventListener('input', (e) => {
 //   const val = e.target.value;
 //   osc.frequency.value = val * 400;
 // })
@@ -84,7 +95,7 @@ document.querySelector("#play").addEventListener("click", () => {
 // const noteOff = () => {
 //   gainNode.gain.cancelScheduledValues();
 
-//   // SUSTAIN -> RELEASE 
+//   // SUSTAIN -> RELEASE
 //   const now = actx.currentTime;
 //   const relDuration = ASDR.release * STAGE_MAX_TIME;
 //   const relEndTime = now + relDuration;
@@ -107,24 +118,22 @@ document.querySelector("#play").addEventListener("click", () => {
 //  ------ ECHO -------------
 // ------ time / feedback ---------
 
-const echo = {
-  time: 0.2,
-  feedback: 0.2,
-  maxDuration: 2 // sexonds
-}
+// const echo = {
+//   time: 0.2,
+//   feedback: 0.2,
+//   maxDuration: 2 // sexonds
+// }
 
-const oscillator = createOscillator(); // etc.
-oscillator.connect(actx.destination);
+// const oscillator = createOscillator(); // etc.
+// oscillator.connect(actx.destination);
 
-const delayNode = actx.createDelay();
-delayNode.delayTime.value = echo.time * maxDuration;
-delayNode.connect(actx.destination);
+// const delayNode = actx.createDelay();
+// delayNode.delayTime.value = echo.time * maxDuration;
+// delayNode.connect(actx.destination);
 
-const gainNode = actx.createGain();
-gainNode.gain.value = echo.feedback;
+// const gainNode = actx.createGain();
+// gainNode.gain.value = echo.feedback;
 
-oscillator.connect(delayNode);
-delayNode.connect(gainNode);
-gainNode.connect(delayNode);
-
-
+// oscillator.connect(delayNode);
+// delayNode.connect(gainNode);
+// gainNode.connect(delayNode);

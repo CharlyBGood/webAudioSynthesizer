@@ -6,7 +6,28 @@ body {
   background-color: black;
 }
 
+.synth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+  width: 65%;
+  margin: 2em auto;
+  padding: 5em;
+}
+
 input[type="range"] {
   appearance: none;
   border: 1px solid #222;
+  cursor: pointer;
+}
+
+label {
+  color: antiquewhite;
+}
+
+.waveforms-container {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 25%;  
 }
