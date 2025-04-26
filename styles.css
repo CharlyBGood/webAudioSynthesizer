@@ -1,33 +1,154 @@
 * {
-  box-sizing: border-box;  
+  box-sizing: border-box;
 }
 
 body {
-  background-color: black;
+  background: radial-gradient(circle, #1a1a1a, #000);
+  font-family: 'Orbitron', sans-serif;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
 }
 
 .synth-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  
-  width: 65%;
-  margin: 2em auto;
-  padding: 5em;
+  align-items: center;
+  margin: 1em auto;
+  padding: 1.5em;
+  border: 0.2em solid #444;
+  border-radius: 1em;
+  background: linear-gradient(145deg, #111, #222);
+  box-shadow: 0 0 2em #0ff, 0 0 4em #0ff;
+  width: 90%; /* Full width on mobile */
+  max-width: 50%; /* Centered and 50% width on larger screens */
 }
 
 input[type="range"] {
   appearance: none;
-  border: 1px solid #222;
+  border: 0.1em solid #222;
   cursor: pointer;
+  width: 100%;
 }
 
 label {
   color: antiquewhite;
+  font-size: 1rem;
 }
 
 .waveforms-container {
   display: flex;
   flex-wrap: nowrap;
-  width: 25%;  
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.waveform {
+  background-color: #444;
+  color: white;
+  border: 0.1em solid #666;
+  padding: 0.5em 1em;
+  margin: 0.5em;
+  cursor: pointer;
+  border-radius: 0.5em;
+  text-transform: capitalize;
+  font-size: 1rem;
+}
+
+.waveform:hover {
+  background-color: #666;
+}
+
+.notes-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1em;
+  position: relative;
+  width: 100%;
+  max-width: 50%;
+}
+
+.note {
+  background: #fff;
+  color: #000;
+  border: 0.1em solid #ccc;
+  margin: 0.2em;
+  cursor: pointer;
+  border-radius: 0.5em;
+  text-transform: uppercase;
+  font-size: 1rem;
+  box-shadow: 0 0 0.5em #000;
+  transition: all 0.2s ease-in-out;
+  width: 3em;
+  height: 8em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.note.black {
+  background: #333;
+  color: #fff;
+  width: 2em;
+  height: 5em;
+  position: absolute;
+  margin: 0;
+  z-index: 1;
+  left: calc(50% - 1em);
+  box-shadow: 0 0 0.5em #000;
+}
+
+.note:hover {
+  background: #0ff;
+  color: #111;
+  box-shadow: 0 0 2em #0ff, 0 0 4em #0ff;
+}
+
+.note.active {
+  background: #0ff;
+  color: #111;
+  box-shadow: 0 0 3em #0ff, 0 0 6em #0ff;
+}
+
+.adsr-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1em;
+  color: antiquewhite;
+  width: 100%;
+  max-width: 50%;
+}
+
+.adsr-container label {
+  color: #0ff;
+  font-size: 1rem;
+}
+
+#status {
+  color: #0ff;
+  margin-top: 1em;
+  font-size: 1.2rem;
+  text-shadow: 0 0 1em #0ff, 0 0 2em #0ff;
+}
+
+@media (min-width: 768px) {
+  .synth-container {
+    max-width: 50%;
+  }
+
+  .notes-container {
+    max-width: 50%;
+  }
+
+  .adsr-container {
+    max-width: 50%;
+  }
 }

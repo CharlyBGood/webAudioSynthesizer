@@ -16,6 +16,7 @@
           class="waveform"
           id="waveform_0"
           value="sine"
+          aria-label="Select Sine Waveform"
         />
         <input
           type="button"
@@ -49,8 +50,37 @@
         max="1"
         step="0.01"
         value="0.5"
+        aria-label="Oscillator Frequency"
       />
     </div>
+
+    <div class="adsr-container">
+      <label for="attack">Attack</label>
+      <input type="range" id="attack" min="0" max="1" step="0.01" value="0.1" />
+      <label for="decay">Decay</label>
+      <input type="range" id="decay" min="0" max="1" step="0.01" value="0.1" />
+      <label for="sustain">Sustain</label>
+      <input type="range" id="sustain" min="0" max="1" step="0.01" value="0.7" />
+      <label for="release">Release</label>
+      <input type="range" id="release" min="0" max="1" step="0.01" value="0.2" />
+    </div>
+
+    <div class="notes-container">
+      <button class="note" data-note="C">C</button>
+      <button class="note" data-note="CSharp">C#</button>
+      <button class="note" data-note="D">D</button>
+      <button class="note" data-note="DSharp">D#</button>
+      <button class="note" data-note="E">E</button>
+      <button class="note" data-note="F">F</button>
+      <button class="note" data-note="FSharp">F#</button>
+      <button class="note" data-note="G">G</button>
+      <button class="note" data-note="GSharp">G#</button>
+      <button class="note" data-note="A">A</button>
+      <button class="note" data-note="ASharp">A#</button>
+      <button class="note" data-note="B">B</button>
+    </div>
+
+    <div id="status">Current Note: None | Waveform: Sine</div>
 
     <script src="main.js"></script>
   </body>

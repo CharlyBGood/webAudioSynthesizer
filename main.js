@@ -1,8 +1,23 @@
 const WAVEFORMS = ["sine", "square", "sawtooth", "triangle"];
 const NOTES = {
-  A: 440,
-  C: 571.23,
+  C: 261.63,
+  CSharp: 277.18,
+  D: 293.66,
+  DSharp: 311.13,
+  E: 329.63,
+  F: 349.23,
+  FSharp: 369.99,
+  G: 392.00,
+  GSharp: 415.30,
+  A: 440.00,
+  ASharp: 466.16,
+  B: 493.88,
 };
+
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+if (!AudioContext) {
+  alert("Your browser does not support the Web Audio API.");
+}
 
 const sliderValue = document.querySelectorAll(".waveform");
 
@@ -10,14 +25,12 @@ let waveFormVal = "sine";
 
 sliderValue.forEach((btn) => {
   btn.addEventListener("click", (e) => {
-    console.log(e.target.value);
     waveFormVal = e.target.value;
   });
 });
 
 document.querySelector("#play").addEventListener("click", () => {
-  console.log("you pressed play and selected waveform is " + waveFormVal);
-  const actx = new (AudioContext || webkitAudioContext)();
+  const actx = new AudioContext();
   if (!actx) throw "Not supported!";
   const osc = actx.createOscillator();
   osc.type = waveFormVal;
@@ -27,113 +40,96 @@ document.querySelector("#play").addEventListener("click", () => {
   osc.stop(actx.currentTime + 2);
 });
 
-// -----------------------------------------
+const sliderNote = document.querySelector('#oscillator');
 
-// const sliderNote = document.querySelector('input[type="range"]')
+sliderNote.addEventListener('input', (e) => {
+  const val = e.target.value;
+  console.log(`Oscillator frequency multiplier: ${val}`);
+  // Update oscillator frequency dynamically
+  const actx = new AudioContext();
+  const osc = actx.createOscillator();
+  osc.type = waveFormVal;
+  osc.frequency.value = NOTES.A * val; // Adjust frequency
+  osc.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 2);
+});
 
-// sliderNote.addEventListener('input', (e) => {
-//   const val = e.target.value;
-//   osc.frequency.value = val * 400;
-// })
+document.querySelectorAll(".note").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    const note = e.target.dataset.note;
+    updateStatus(note);
+    playNoteWithADSR(NOTES[note]);
+  });
+});
 
-// -----------------------------------------
+const KEY_NOTE_MAP = {
+  a: "C",
+  s: "CSharp",
+  d: "D",
+  f: "DSharp",
+  g: "E",
+  h: "F",
+  j: "FSharp",
+  k: "G",
+  l: "GSharp",
+  ñ: "A",
+  "{": "ASharp",
+  "}": "B",
+};
 
-// const unisonWidth = 10;
+// Listen for keydown events to play notes
+document.addEventListener("keydown", (e) => {
+  const note = KEY_NOTE_MAP[e.key.toLowerCase()];
+  if (note) {
+    updateStatus(note);
+    playNoteWithADSR(NOTES[note]);
 
-// const oscBank = new Array(3);
+    // Highlight the corresponding button
+    const button = document.querySelector(`.note[data-note="${note}"]`);
+    if (button) {
+      button.classList.add("active");
+      setTimeout(() => button.classList.remove("active"), 200); // Remove highlight after 200ms
+    }
+  }
+});
 
-// const createOscillators = (freq, detune) => {
-//   const osc = actx.createOscillator();
-//   osc.type = "sawtooth";
-//   osc.frequency.value = freq;
-//   osc.detune.value = detune;
-//   osc.connect(actx.destination);
-//   osc.start();
-//   return osc;
-// };
+function playNote(frequency) {
+  const actx = new AudioContext();
+  const osc = actx.createOscillator();
+  osc.type = waveFormVal;
+  osc.frequency.value = frequency;
+  osc.connect(actx.destination);
+  osc.start();
+  osc.stop(actx.currentTime + 1); // Play for 1 second
+}
 
-// const noteOn = (note) => {
-//   const freq = NOTES[note];
-//   oscBank[0] = createOscillator(freq, 0);
-//   oscBank[1] = createOscillator(freq, -unisonWidth);
-//   oscBank[2] = createOscillator(freq, unisonWidth);
-// };
+function playNoteWithADSR(frequency) {
+  const actx = new AudioContext();
+  const osc = actx.createOscillator();
+  const gainNode = actx.createGain();
 
-//  ----------------------------
+  const attack = parseFloat(document.querySelector("#attack").value);
+  const decay = parseFloat(document.querySelector("#decay").value);
+  const sustain = parseFloat(document.querySelector("#sustain").value);
+  const release = parseFloat(document.querySelector("#release").value);
 
-// AudioParam.value = value;
-// AudioParam.setValueAtTime();
-// AudioParam.linearRampToValueAtTime();
-// AudioParam.exponentialRampToValueAtTime();
-// AudioParam.setTargetAtTime();
-// AudioParam.setValueCurveAtTime();
-// AudioParam.cancelScheduledValues();
+  osc.type = waveFormVal;
+  osc.frequency.value = frequency;
+  osc.connect(gainNode);
+  gainNode.connect(actx.destination);
 
-//  -----------------------------
+  const now = actx.currentTime;
+  gainNode.gain.setValueAtTime(0, now);
+  gainNode.gain.linearRampToValueAtTime(1, now + attack); // Attack
+  gainNode.gain.linearRampToValueAtTime(sustain, now + attack + decay); // Decay
+  gainNode.gain.setValueAtTime(sustain, now + attack + decay + 0.5); // Sustain
+  gainNode.gain.linearRampToValueAtTime(0, now + attack + decay + 0.5 + release); // Release
 
-// const ADSR = { attack: 0.2, decay: 0, sustain: 1, release: 0.3 };
+  osc.start();
+  osc.stop(now + attack + decay + 0.5 + release);
+}
 
-// const STAGE_MAX_TIME = 2; // seconds
-
-// const noteOn = (freq) => {
-//   gainNode.gain.cancelScheduledValues();
-
-//   const osc = createOscillator(freq); //etc
-//   osc.connect(gainNode);
-
-//   // ATTACK -> DECAY -> SUSTAIN
-//   const now = actx.currentTime;
-//   const atkDuration = ADSR.attack * STAGE_MAX_TIME;
-//   const atkEndTime = now + atkDuration;
-//   const decayDuration = ADSR.decay * STAGE_MAX_TIME;
-
-//   gainNode.gain.setValueAtTime(0, actx.currentTime);
-//   gainNode.gain.linearRampToValueAtTime(1, atkEndTime);
-//   gainNode.gain.setTargetAtTime(ADSR.sustain, atkEndTime, decayDuration);
-// };
-
-// const noteOff = () => {
-//   gainNode.gain.cancelScheduledValues();
-
-//   // SUSTAIN -> RELEASE
-//   const now = actx.currentTime;
-//   const relDuration = ASDR.release * STAGE_MAX_TIME;
-//   const relEndTime = now + relDuration;
-//   gainNode.gain.setValueAtTime(gainNode.gain.value, now);
-//   asdrNode.gain.linearRampToValueAtTime(0, relEndTime);
-// }
-
-//  --------------------------
-
-// const maxFilterFreq = actx.sampleRate / 2;
-
-// const filter =  actx.createBiquadFilter();
-// filter.type = 'lowpass';
-// filter.frequency.value = frequencySlider * maxFilterFreq;
-// filter.Q.value = qSlider * 30;
-
-// oscillator.connect(filter);
-// filter.connect(actx.destination);
-
-//  ------ ECHO -------------
-// ------ time / feedback ---------
-
-// const echo = {
-//   time: 0.2,
-//   feedback: 0.2,
-//   maxDuration: 2 // sexonds
-// }
-
-// const oscillator = createOscillator(); // etc.
-// oscillator.connect(actx.destination);
-
-// const delayNode = actx.createDelay();
-// delayNode.delayTime.value = echo.time * maxDuration;
-// delayNode.connect(actx.destination);
-
-// const gainNode = actx.createGain();
-// gainNode.gain.value = echo.feedback;
-
-// oscillator.connect(delayNode);
-// delayNode.connect(gainNode);
-// gainNode.connect(delayNode);
+function updateStatus(note) {
+  document.querySelector("#status").textContent = `Current Note: ${note} | Waveform: ${waveFormVal}`;
+}
